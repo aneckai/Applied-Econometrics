@@ -1,0 +1,106 @@
+---
+title: "MLD Assignment_v1"
+author: "Maekaila Cena"
+date: "November 12, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r clear workspace}
+rm(list=ls(all=TRUE))
+```
+
+##1. Import Data 
+
+```{r}
+library(psych)
+```
+
+```{r read csv}
+MLD <- read.csv("MLD Data File.csv", header=TRUE)  # import data
+MLD1 <- read.csv("MLD Data File.csv")
+```
+
+
+##2. Data Preparation and Cleaning
+
+```{r col names}
+colnames(MLD)
+```
+
+Structure of Data:
+```{r structure}
+str(MLD)
+```
+
+Descriptive statstics:
+```{r stats}
+summary(MLD)
+```
+
+```{r}
+MLD <- na.omit(MLD)
+summary(MLD)
+```
+
+
+```{r}
+names(MLD) <- make.names(names(MLD))
+colnames(MLD)
+```
+
+```{r}
+SubsettedMLD <- (MLD[,c("Married","Credit.Guidelines", "Other.Obligations..As.Percent..Of..Income", "Non.Hispanic.White", "Non.Hispanic.Black", "Hispanic","Approved","Present.Loan.to.Value")])
+MLDsubsample <- subset(SubsettedMLD, Present.Loan.to.Value >= 1)
+MLDsubsample
+```
+
+## Logit Models 
+```{r}
+#Estimate Logit Model
+BlackLogit = glm(Approved ~ Non.Hispanic.Black + Married + Credit.Guidelines + Other.Obligations..As.Percent..Of..Income+  Present.Loan.to.Value, data = SubsettedMLD, family = "binomial")
+summary(BlackLogit)
+
+```
+
+```{r}
+#Estimate Logit Model
+HispanicLogit = glm(Approved ~ Hispanic + Married + Credit.Guidelines +  Other.Obligations..As.Percent..Of..Income+  Present.Loan.to.Value, data = SubsettedMLD, family = "binomial")
+summary(HispanicLogit)
+
+```
+
+### Logit Odd Ratios
+
+```{r}
+#BLACK
+#Generate Odds Ratios
+exp(coef(BlackLogit))
+```
+
+
+```{r}
+#HISPANIC
+exp(coef(HispanicLogit))
+```
+
+
+## Probit Models 
+
+```{r}
+#Estimate Probit Model
+BlackProbit = glm(Approved ~ Non.Hispanic.Black + Married + Credit.Guidelines + Other.Obligations..As.Percent..Of..Income+  Present.Loan.to.Value, data = SubsettedMLD, 
+                  family = "binomial" (link = "probit"))
+summary(BlackProbit)
+```
+
+```{r}
+#Estimate Probit Model
+HispanicProbit = glm(Approved ~ Hispanic + Married + Credit.Guidelines + Other.Obligations..As.Percent..Of..Income+  Present.Loan.to.Value, data = SubsettedMLD, 
+                  family = "binomial" (link = "probit"))
+summary(HispanicProbit)
+```
+
